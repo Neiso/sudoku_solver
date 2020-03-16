@@ -1,21 +1,31 @@
 import os
+import copy
 
-def print_board(board):
+def print_boards(board, board_cpy):
 	index_vert = 0
 	index_hor = 0
 
 	print("")
-	print("-" * 25)
-	for row in board:
-		index_hor += 1
-		for i in row :
-			if index_vert % 3 == 0 :
+	print("-" * 25, " " * 10, "-" * 25)
+	while (index_vert < 9):
+		while (index_hor < 9):
+			if index_hor % 3  == 0 :
 				print("| ", end = "")
-			print(i, "", end="")
-			index_vert+= 1 
+			print(str(board[index_vert][index_hor]) + " ", end="")
+			index_hor += 1
+		print("| ", end="")
+		index_hor = 0
+		print(" " * 10, end="")
+		while (index_hor < 9):
+			if index_hor % 3  == 0 :
+				print("| ", end = "")
+			print(str(board_cpy[index_vert][index_hor]) + " ", end="")
+			index_hor += 1
+		index_hor = 0
 		print("| ")
-		if index_hor % 3 == 0 :
-			print("-" * 25)
+		index_vert += 1
+		if index_vert % 3  == 0 :
+			print("-" * 25 + " " * 10, "-" * 25)
 	print("")
 
 def print_board_str(board):
@@ -34,6 +44,7 @@ def print_board_str(board):
 		string += "| \n"
 		if index_hor % 3 == 0 :
 			string += ("-" * 25) + "\n"
+	print(string)
 	return (string)
 
 
@@ -61,7 +72,7 @@ def verify_square(board, x, y, value):
 				return 0
 	return 1
 
-def solver(board, x=0, y=0):
+def solver(board):
 	x = 0
 	y = 0
 	for row in board:
@@ -70,7 +81,7 @@ def solver(board, x=0, y=0):
 				for value in range(1,10):
 					if (verify_square(board, x, y, value) and verify_axes(board, x, y, value)):
 						row[x] = value
-						if (solver(board, x, y)):
+						if (solver(board)):
 							return 1
 						else:
 							row[x] = 0
@@ -81,7 +92,10 @@ def solver(board, x=0, y=0):
 		y += 1
 	return 1
 
-def main():
+def play_soduku(board):
+	print("here")
+
+def menu():
 	board = [
 		[3, 7, 0, 9, 2, 0, 8, 4, 0],
 		[0, 1, 0, 0, 7, 0, 9, 0, 2],
@@ -93,11 +107,26 @@ def main():
 		[8, 0, 3, 0, 9, 0, 0, 5, 0],
 		[0, 5, 4, 0, 6, 7, 0, 9, 3]
 	]
-	# print_board(board)
-	solver(board)
-	# print_board(board)
-	with open("result.txt", "w") as f:
-		f.write(print_board_str(board))
-	os.system("diff solved.txt result.txt")
+	board_cpy = copy.deepcopy(board)
+	os.system("clear")
+	while (True):
+		print("\t\tWelcome to the Sudoku Solver v0.2\n")
+		print("Choose an option :\n")
+		print("1]\tPrint the board")
+		print("2]\tTry to solve it")
+		print("3]\tDisplay the solution")
+		print("4]\tQuit")
+		raw_choice = input("\nYour choice : ")
+		os.system("clear")
+		if (raw_choice == "1"):
+			print_board_str(board)
+		elif (raw_choice == "2"):
+			play_soduku(board_cpy)
+		elif (raw_choice == "3"):
+			solver(board_cpy)
+			print_boards(board, board_cpy)
+		elif (raw_choice == "4"):
+			break
+	print_boards(board, board_cpy)
 
-main()
+menu()
