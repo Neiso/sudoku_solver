@@ -6,7 +6,7 @@ def print_boards(board, board_cpy):
 	index_hor = 0
 
 	print("")
-	print("-" * 25, " " * 10, "-" * 25)
+	print("-" * 25 + " " * 11 + "-" * 25)
 	while (index_vert < 9):
 		while (index_hor < 9):
 			if index_hor % 3  == 0 :
@@ -15,7 +15,10 @@ def print_boards(board, board_cpy):
 			index_hor += 1
 		print("| ", end="")
 		index_hor = 0
-		print(" " * 10, end="")
+		if index_vert == 4 :
+			print (" " * 3 + "->" + " " * 5, end="")
+		else:
+		 print(" " * 10, end="")
 		while (index_hor < 9):
 			if index_hor % 3  == 0 :
 				print("| ", end = "")
@@ -95,6 +98,17 @@ def solver(board):
 def play_soduku(board):
 	print("here")
 
+def import_board():
+	board = []
+	row = []
+	for i in range(0, 9):
+		row_raw = input("Type the {} row in one line : ".format(i + 1))
+		for index in row_raw:
+			row.append(int(index))
+		board.append(row)
+		row = []
+	return board
+
 def menu():
 	board = [
 		[3, 7, 0, 9, 2, 0, 8, 4, 0],
@@ -115,7 +129,8 @@ def menu():
 		print("1]\tPrint the board")
 		print("2]\tTry to solve it")
 		print("3]\tDisplay the solution")
-		print("4]\tQuit")
+		print("4]\tImport a board")
+		print("5]\tQuit")
 		raw_choice = input("\nYour choice : ")
 		os.system("clear")
 		if (raw_choice == "1"):
@@ -126,7 +141,12 @@ def menu():
 			solver(board_cpy)
 			print_boards(board, board_cpy)
 		elif (raw_choice == "4"):
+			board = import_board()
+			board_cpy = copy.deepcopy(board)
+		elif (raw_choice == "5" or raw_choice == "exit"):
 			break
-	print_boards(board, board_cpy)
+		else :
+			print("Enter a proper value please.\n")
+		
 
 menu()
