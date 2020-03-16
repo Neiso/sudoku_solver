@@ -1,7 +1,10 @@
+import os
+
 def print_board(board):
 	index_vert = 0
 	index_hor = 0
 
+	print("")
 	print("-" * 25)
 	for row in board:
 		index_hor += 1
@@ -13,6 +16,26 @@ def print_board(board):
 		print("| ")
 		if index_hor % 3 == 0 :
 			print("-" * 25)
+	print("")
+
+def print_board_str(board):
+	index_vert = 0
+	index_hor = 0
+	string = "\n"
+
+	string += ("-" * 25) + "\n"
+	for row in board:
+		index_hor += 1
+		for i in row :
+			if index_vert % 3 == 0 :
+				string += "| "
+			string += str(i) + " "
+			index_vert+= 1 
+		string += "| \n"
+		if index_hor % 3 == 0 :
+			string += ("-" * 25) + "\n"
+	return (string)
+
 
 def verify_axes(board, x, y, value):
 	for i in board[y]:
@@ -38,16 +61,16 @@ def verify_square(board, x, y, value):
 				return 0
 	return 1
 
-def solver(board):
+def solver(board, x=0, y=0):
 	x = 0
 	y = 0
 	for row in board:
 		for i in row:
 			if i == 0:
-				for value in range(1,9):
+				for value in range(1,10):
 					if (verify_square(board, x, y, value) and verify_axes(board, x, y, value)):
 						row[x] = value
-						if (solver(board)):
+						if (solver(board, x, y)):
 							return 1
 						else:
 							row[x] = 0
@@ -60,18 +83,21 @@ def solver(board):
 
 def main():
 	board = [
-		[0, 0, 0, 0, 0, 0, 0, 7, 0],
-		[0, 0, 0, 0, 5, 0, 8, 0, 1],
-		[0, 0, 6, 4, 1, 0, 0, 3, 5],
-		[6, 0, 7, 0, 0, 0, 5, 2, 0],
-		[0, 0, 0, 2, 0, 9, 0, 0, 0],
-		[0, 4, 1, 0, 0, 0, 6, 0, 9],
-		[9, 7, 0, 0, 2, 1, 4, 0, 0],
-		[1, 0, 5, 0, 3, 0, 0, 0, 0],
-		[0, 8, 0, 0, 0, 0, 0, 0, 0]
+		[3, 7, 0, 9, 2, 0, 8, 4, 0],
+		[0, 1, 0, 0, 7, 0, 9, 0, 2],
+		[2, 0, 0, 0, 0, 4, 0, 7, 0],
+		[0, 3, 1, 0, 0, 5, 0, 0, 0],
+		[0, 8, 7, 0, 0, 0, 3, 2, 0],
+		[0, 0, 0, 7, 0, 0, 1, 6, 0],
+		[0, 6, 0, 3, 0, 0, 0, 0, 8],
+		[8, 0, 3, 0, 9, 0, 0, 5, 0],
+		[0, 5, 4, 0, 6, 7, 0, 9, 3]
 	]
 	# print_board(board)
 	solver(board)
 	# print_board(board)
+	with open("result.txt", "w") as f:
+		f.write(print_board_str(board))
+	os.system("diff solved.txt result.txt")
 
 main()
