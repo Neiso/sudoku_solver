@@ -1,5 +1,6 @@
 import os
 import copy
+import threading
 
 def print_boards(board, board_cpy):
 	index_vert = 0
@@ -50,7 +51,6 @@ def print_board_str(board):
 	print(string)
 	return (string)
 
-
 def verify_axes(board, x, y, value):
 	for i in board[y]:
 		if i == value:
@@ -98,16 +98,53 @@ def solver(board):
 def play_soduku(board):
 	print("here")
 
-def import_board():
-	board = []
-	row = []
-	for i in range(0, 9):
-		row_raw = input("Type the {} row in one line : ".format(i + 1))
-		for index in row_raw:
-			row.append(int(index))
-		board.append(row)
+def valid_board(board):
+	if (len(board) != 9):
+		return (False)
+	for row in board :
+		if (len(row) != 9):
+			return (False)
+	return (True)
+
+def import_board(init_board):
+	try:	
+		board = []
 		row = []
-	return board
+		print ("Insert each row of the sudoku board. for example : \n\t002060040\n")
+		print ("If you made a mistake, you can go back like this at the end : \n\tgoto 4\n\t002060040\n")
+		for i in range(0, 9):
+			row_raw = input("Type the {} row in one line : ".format(i + 1))
+			if (row_raw == "exit"):
+				return(init_board)
+			else :
+				for index in row_raw:
+					if index not in "0123456789":
+						raise TypeError("Only digit.")
+					row.append(int(index))
+			board.append(row)
+			row = []
+		string = input("Type OK if you are done or goto to make changes or print the board : ")
+		while(string.upper() != "OK"):
+			if (string[0:4] == "goto"):
+				row_index = int(string[5])
+				string = input("Type the {} row in one line : ".format(int(string[5])))
+				row = list(map(int, list(string)))
+				board[row_index - 1] = row
+			elif (string[0:5] == "print"):
+				print_board_str(board)
+			string = input("Type OK if you are done or goto to make changes or print the board : ")
+		if (valid_board(board)):	
+			return board
+		else :
+			raise ValueError("Not a proper Board")
+	except TypeError as err:
+		os.system("clear")
+		print(err, "\n")
+		return init_board
+	except ValueError as err:
+		os.system("clear")
+		print(err, "\n")
+		return init_board
 
 def menu():
 	board = [
@@ -141,12 +178,32 @@ def menu():
 			solver(board_cpy)
 			print_boards(board, board_cpy)
 		elif (raw_choice == "4"):
-			board = import_board()
+			board = import_board(board)
 			board_cpy = copy.deepcopy(board)
 		elif (raw_choice == "5" or raw_choice == "exit"):
 			break
 		else :
 			print("Enter a proper value please.\n")
 		
+board = [
+	[3, 7, 0, 9, 2, 0, 8, 4, 0],
+	[0, 1, 0, 0, 7, 0, 9, 0, 2],
+	[2, 0, 0, 0, 0, 4, 0, 7, 0],
+	[0, 3, 1, 0, 0, 5, 0, 0, 0],
+	[0, 8, 7, 0, 0, 0, 3, 2, 0],
+	[0, 0, 0, 7, 0, 0, 1, 6, 0],
+	[0, 6, 0, 3, 0, 0, 0, 0, 8],
+	[8, 0, 3, 0, 9, 0, 0, 5, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
+# print_board_str(board)
+
+# string = input("type goto 5 : ")
+# index = int(string[5])
+# string = input("Type the {} row in one line : ".format(int(string[5])))
+# row = list(map(int, list(string)))
+# board[index] = row
+
+# print_board_str(board)
 menu()
