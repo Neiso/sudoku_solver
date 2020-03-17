@@ -1,6 +1,7 @@
 import os
 import copy
 import threading
+import time
 
 def print_boards(board, board_cpy):
 	index_vert = 0
@@ -96,7 +97,23 @@ def solver(board):
 	return 1
 
 def play_soduku(board):
-	print("here")
+	x = 0
+	y = 0
+	cpy = board[y][x]
+	board[y][x] = " "
+	swap = True
+	os.system("clear")
+	while (True):
+		print_board_str(board)
+		if (swap):
+			swap = False
+			board[y][x] = cpy
+		else :
+			cpy = board[y][x]
+			swap = True
+			board[y][x] = " "
+		time.sleep(0.5)
+		os.system("clear")
 
 def valid_board(board):
 	if (len(board) != 9):
@@ -184,26 +201,5 @@ def menu():
 			break
 		else :
 			print("Enter a proper value please.\n")
-		
-board = [
-	[3, 7, 0, 9, 2, 0, 8, 4, 0],
-	[0, 1, 0, 0, 7, 0, 9, 0, 2],
-	[2, 0, 0, 0, 0, 4, 0, 7, 0],
-	[0, 3, 1, 0, 0, 5, 0, 0, 0],
-	[0, 8, 7, 0, 0, 0, 3, 2, 0],
-	[0, 0, 0, 7, 0, 0, 1, 6, 0],
-	[0, 6, 0, 3, 0, 0, 0, 0, 8],
-	[8, 0, 3, 0, 9, 0, 0, 5, 0],
-	[0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
 
-# print_board_str(board)
-
-# string = input("type goto 5 : ")
-# index = int(string[5])
-# string = input("Type the {} row in one line : ".format(int(string[5])))
-# row = list(map(int, list(string)))
-# board[index] = row
-
-# print_board_str(board)
 menu()
