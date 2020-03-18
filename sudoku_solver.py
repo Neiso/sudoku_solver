@@ -149,12 +149,13 @@ def play_soduku(board):
 			else :
 				y += 1
 			board.player_pos_y = y
-			board.tales_cpy = board.board[x][y]		
+			board.tales_cpy = board.board[x][y]
+		elif string in "0123456789" :
+			board.board[y][x] = string	
 		if string == 'x':
 			break
 	my_process.terminate()
 	os.system("clear")
-	board.print_board_str()
 
 def valid_board(board):
 	if (len(board) != 9):
@@ -231,8 +232,8 @@ def menu():
 		os.system("clear")
 		if (raw_choice == "1"):
 			board.print_board_str()
-		# elif (raw_choice == "2"):
-		# 	play_soduku(board_cpy)
+		elif (raw_choice == "2"):
+			play_soduku(board)
 		elif (raw_choice == "3"):
 			solver(board_cpy)
 			print_boards(board.board, board_cpy)
@@ -244,26 +245,4 @@ def menu():
 		else :
 			print("Enter a proper value please.\n")
 
-# menu()
-
-board = [
-	[3, 7, 0, 9, 2, 0, 8, 4, 0],
-	[0, 1, 0, 0, 7, 0, 9, 0, 2],
-	[2, 0, 0, 0, 0, 4, 0, 7, 0],
-	[0, 3, 1, 0, 0, 5, 0, 0, 0],
-	[0, 8, 7, 0, 0, 0, 3, 2, 0],
-	[0, 0, 0, 7, 0, 0, 1, 6, 0],
-	[0, 6, 0, 3, 0, 0, 0, 0, 8],
-	[8, 0, 3, 0, 9, 0, 0, 5, 0],
-	[0, 5, 4, 0, 6, 7, 0, 9, 3]
-]
-
-board = Board(board)
-play_soduku(board)
-
-# process = multiprocessing.Process(target=time.sleep, args=[10])
-# process.start()
-# print(process.is_alive())
-# process.terminate()
-# while(process.is_alive()):
-# 	print(process.is_alive())
+menu()
