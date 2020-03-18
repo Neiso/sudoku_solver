@@ -82,7 +82,10 @@ def solver(board):
 		y += 1
 	return 1
 
-def play_soduku(board):
+def display_sudoku_highligth(board):
+	os.system("clear")
+	board.print_board_str()
+	time.sleep(0.05)
 	x = board.player_pos_x
 	y = board.player_pos_y
 	board.tale_cpy = board.board[y][x]
@@ -91,14 +94,67 @@ def play_soduku(board):
 	os.system("clear")
 	while (not board.solved):
 		board.print_board_str()
+		time.sleep(0.25)
 		if (swap):
 			swap = False
 			board.board[y][x] = board.tale_cpy
 		else :
 			swap = True
 			board.board[y][x] = " "
-		time.sleep(0.5)
 		os.system("clear")
+
+def play_soduku(board):
+	x = 0
+	y = 0
+	while (not board.solved):
+		board.tales_cpy = board.board[x][y]
+		my_process = multiprocessing.Process(target=display_sudoku_highligth, args=[board])
+		my_process.start()
+		string = getch.getch()
+		my_process.terminate()
+		while (my_process.is_alive()):
+			time.sleep(0.1)
+		if string == 'q':
+			if board.board[x][y] == " ":
+				board.board[x][y] = board.tales_cpy
+			if (x == 0):
+				x = 8
+			else :
+				x -= 1
+			board.player_pos_x = x
+			board.tales_cpy = board.board[x][y]
+		elif string == 'd':
+			if board.board[x][y] == " ":
+				board.board[x][y] = board.tales_cpy
+			if (x == 8):
+				x = 0
+			else :
+				x += 1
+			board.player_pos_x = x
+			board.tales_cpy = board.board[x][y]
+		elif string == 'z':
+			if board.board[x][y] == " ":
+				board.board[x][y] = board.tales_cpy
+			if (y == 0):
+				y = 8
+			else :
+				y -= 1
+			board.player_pos_y = y
+			board.tales_cpy = board.board[x][y]
+		elif string == 's':
+			if board.board[x][y] == " ":
+				board.board[x][y] = board.tales_cpy
+			if (y == 8):
+				y = 0
+			else :
+				y += 1
+			board.player_pos_y = y
+			board.tales_cpy = board.board[x][y]		
+		if string == 'x':
+			break
+	my_process.terminate()
+	os.system("clear")
+	board.print_board_str()
 
 def valid_board(board):
 	if (len(board) != 9):
@@ -203,25 +259,11 @@ board = [
 ]
 
 board = Board(board)
-x = 8
-y = 8
-board.player_pos_x = x
-board.player_pos_y = y
-board.tales_cpy = board.board[x][y]
-thread1 = multiprocessing.Process(target=play_soduku, args=[board])
-thread1.start()
-while (not board.solved):
-	string = getch.getch()
-	if string == 'q':
-		thread1.terminate()
-		thread1 = multiprocessing.Process(target=play_soduku, args=[board])
-		if board.board[x][y] == " ":
-			board.board[x][y] = board.tales_cpy
-		x -= 1
-		board.player_pos_x = x
-		board.tales_cpy = board.board[x][y]
-		thread1.start()
-	if string == 'x':
-		break
-thread1.terminate()
-board.print_board_str()
+play_soduku(board)
+
+# process = multiprocessing.Process(target=time.sleep, args=[10])
+# process.start()
+# print(process.is_alive())
+# process.terminate()
+# while(process.is_alive()):
+# 	print(process.is_alive())
