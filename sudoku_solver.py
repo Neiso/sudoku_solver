@@ -1,5 +1,8 @@
+#!/usr/bin/python3
+
 import os
 import copy
+from MyClasses import Board
 import threading
 import time
 
@@ -32,25 +35,6 @@ def print_boards(board, board_cpy):
 		if index_vert % 3  == 0 :
 			print("-" * 25 + " " * 10, "-" * 25)
 	print("")
-
-def print_board_str(board):
-	index_vert = 0
-	index_hor = 0
-	string = "\n"
-
-	string += ("-" * 25) + "\n"
-	for row in board:
-		index_hor += 1
-		for i in row :
-			if index_vert % 3 == 0 :
-				string += "| "
-			string += str(i) + " "
-			index_vert+= 1 
-		string += "| \n"
-		if index_hor % 3 == 0 :
-			string += ("-" * 25) + "\n"
-	print(string)
-	return (string)
 
 def verify_axes(board, x, y, value):
 	for i in board[y]:
@@ -97,21 +81,21 @@ def solver(board):
 	return 1
 
 def play_soduku(board):
-	x = 0
-	y = 0
-	cpy = board[y][x]
-	board[y][x] = " "
+	x = board.player_pos_x
+	y = board.player_pos_y
+	cpy = board.board[y][x]
+	board.board[y][x] = " "
 	swap = True
 	os.system("clear")
-	while (True):
-		print_board_str(board)
+	while (not board.solved):
+		board.print_board_str()
 		if (swap):
 			swap = False
-			board[y][x] = cpy
+			board.board[y][x] = cpy
 		else :
-			cpy = board[y][x]
+			cpy = board.board[y][x]
 			swap = True
-			board[y][x] = " "
+			board.board[y][x] = " "
 		time.sleep(0.5)
 		os.system("clear")
 
@@ -125,7 +109,7 @@ def valid_board(board):
 
 def import_board(init_board):
 	try:	
-		board = []
+		board = Board([])
 		row = []
 		print ("Insert each row of the sudoku board. for example : \n\t002060040\n")
 		print ("If you made a mistake, you can go back like this at the end : \n\tgoto 4\n\t002060040\n")
@@ -138,7 +122,7 @@ def import_board(init_board):
 					if index not in "0123456789":
 						raise TypeError("Only digit.")
 					row.append(int(index))
-			board.append(row)
+			board.board.append(row)
 			row = []
 		string = input("Type OK if you are done or goto to make changes or print the board : ")
 		while(string.upper() != "OK"):
@@ -146,11 +130,11 @@ def import_board(init_board):
 				row_index = int(string[5])
 				string = input("Type the {} row in one line : ".format(int(string[5])))
 				row = list(map(int, list(string)))
-				board[row_index - 1] = row
+				board.board[row_index - 1] = row
 			elif (string[0:5] == "print"):
-				print_board_str(board)
+				board.print_board_str()
 			string = input("Type OK if you are done or goto to make changes or print the board : ")
-		if (valid_board(board)):	
+		if (valid_board(board.board)):	
 			return board
 		else :
 			raise ValueError("Not a proper Board")
@@ -175,7 +159,8 @@ def menu():
 		[8, 0, 3, 0, 9, 0, 0, 5, 0],
 		[0, 5, 4, 0, 6, 7, 0, 9, 3]
 	]
-	board_cpy = copy.deepcopy(board)
+	board = Board(board)
+	board_cpy = copy.deepcopy(board.board)
 	os.system("clear")
 	while (True):
 		print("\t\tWelcome to the Sudoku Solver v0.2\n")
@@ -188,18 +173,38 @@ def menu():
 		raw_choice = input("\nYour choice : ")
 		os.system("clear")
 		if (raw_choice == "1"):
-			print_board_str(board)
-		elif (raw_choice == "2"):
-			play_soduku(board_cpy)
+			board.print_board_str()
+		# elif (raw_choice == "2"):
+		# 	play_soduku(board_cpy)
 		elif (raw_choice == "3"):
 			solver(board_cpy)
-			print_boards(board, board_cpy)
+			print_boards(board.board, board_cpy)
 		elif (raw_choice == "4"):
 			board = import_board(board)
-			board_cpy = copy.deepcopy(board)
+			board_cpy = copy.deepcopy(board.board)
 		elif (raw_choice == "5" or raw_choice == "exit"):
 			break
 		else :
 			print("Enter a proper value please.\n")
 
-menu()
+# menu()
+
+board = [
+	[3, 7, 0, 9, 2, 0, 8, 4, 0],
+	[0, 1, 0, 0, 7, 0, 9, 0, 2],
+	[2, 0, 0, 0, 0, 4, 0, 7, 0],
+	[0, 3, 1, 0, 0, 5, 0, 0, 0],
+	[0, 8, 7, 0, 0, 0, 3, 2, 0],
+	[0, 0, 0, 7, 0, 0, 1, 6, 0],
+	[0, 6, 0, 3, 0, 0, 0, 0, 8],
+	[8, 0, 3, 0, 9, 0, 0, 5, 0],
+	[0, 5, 4, 0, 6, 7, 0, 9, 3]
+]
+
+board = Board(board)
+board.player_pos_x = 3
+board.player_pos_y = 3
+thread1 = threading.Thread(target=play_soduku, args=[board])
+thread1.start()
+time.sleep(2)
+board.solved = True
