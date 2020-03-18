@@ -4,7 +4,9 @@ import os
 import copy
 from MyClasses import Board
 import threading
+import multiprocessing
 import time
+import getch
 
 def print_boards(board, board_cpy):
 	index_vert = 0
@@ -83,7 +85,7 @@ def solver(board):
 def play_soduku(board):
 	x = board.player_pos_x
 	y = board.player_pos_y
-	cpy = board.board[y][x]
+	board.tale_cpy = board.board[y][x]
 	board.board[y][x] = " "
 	swap = True
 	os.system("clear")
@@ -91,9 +93,8 @@ def play_soduku(board):
 		board.print_board_str()
 		if (swap):
 			swap = False
-			board.board[y][x] = cpy
+			board.board[y][x] = board.tale_cpy
 		else :
-			cpy = board.board[y][x]
 			swap = True
 			board.board[y][x] = " "
 		time.sleep(0.5)
@@ -202,9 +203,25 @@ board = [
 ]
 
 board = Board(board)
-board.player_pos_x = 3
-board.player_pos_y = 3
-thread1 = threading.Thread(target=play_soduku, args=[board])
+x = 8
+y = 8
+board.player_pos_x = x
+board.player_pos_y = y
+board.tales_cpy = board.board[x][y]
+thread1 = multiprocessing.Process(target=play_soduku, args=[board])
 thread1.start()
-time.sleep(2)
-board.solved = True
+while (not board.solved):
+	string = getch.getch()
+	if string == 'q':
+		thread1.terminate()
+		thread1 = multiprocessing.Process(target=play_soduku, args=[board])
+		if board.board[x][y] == " ":
+			board.board[x][y] = board.tales_cpy
+		x -= 1
+		board.player_pos_x = x
+		board.tales_cpy = board.board[x][y]
+		thread1.start()
+	if string == 'x':
+		break
+thread1.terminate()
+board.print_board_str()

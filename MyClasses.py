@@ -1,9 +1,11 @@
 import threading
+import copy
 
 class Board():
 	player_pos_x = 0
 	player_pos_y = 0
 	solved = False
+	tales_cpy = 0
 
 	def __init__(self, board):
 		self.board = board
@@ -24,7 +26,6 @@ class Board():
 			string += "| \n"
 			if index_hor % 3 == 0 :
 				string += ("-" * 25) + "\n"
-		print(string)
-		return (string)
+		print(string, flush=False) #For the input while playing to work, i need to flush the stdout
 
 	# def play_sudoku(self):
