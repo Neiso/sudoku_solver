@@ -84,7 +84,8 @@ def solver(board):
 
 def display_sudoku_highligth(board):
 	os.system("clear")
-	board.print_board_str()
+	board.print_board_str(playing = True)
+	print("Move around with QZSD and exit with X.", flush=True)
 	time.sleep(0.05)
 	x = board.player_pos_x
 	y = board.player_pos_y
@@ -93,8 +94,9 @@ def display_sudoku_highligth(board):
 	swap = True
 	os.system("clear")
 	while (not board.solved):
-		board.print_board_str()
-		time.sleep(0.25)
+		board.print_board_str(playing = True)
+		print("Move around with QZSD and exit with X.", flush=True)
+		time.sleep(0.35)
 		if (swap):
 			swap = False
 			board.board[y][x] = board.tale_cpy
@@ -103,7 +105,7 @@ def display_sudoku_highligth(board):
 			board.board[y][x] = " "
 		os.system("clear")
 
-def play_soduku(board):
+def play_sudoku(board):
 	x = 0
 	y = 0
 	while (not board.solved):
@@ -114,48 +116,50 @@ def play_soduku(board):
 		my_process.terminate()
 		while (my_process.is_alive()):
 			time.sleep(0.1)
+		time.sleep(0.033)
 		if string == 'q':
-			if board.board[x][y] == " ":
-				board.board[x][y] = board.tales_cpy
+			if board.board[y][x] == " ":
+				board.board[y][x] = board.tales_cpy
 			if (x == 0):
 				x = 8
 			else :
 				x -= 1
 			board.player_pos_x = x
-			board.tales_cpy = board.board[x][y]
+			board.tales_cpy = board.board[y][x]
 		elif string == 'd':
-			if board.board[x][y] == " ":
-				board.board[x][y] = board.tales_cpy
+			if board.board[y][x] == " ":
+				board.board[y][x] = board.tales_cpy
 			if (x == 8):
 				x = 0
 			else :
 				x += 1
 			board.player_pos_x = x
-			board.tales_cpy = board.board[x][y]
+			board.tales_cpy = board.board[y][x]
 		elif string == 'z':
-			if board.board[x][y] == " ":
-				board.board[x][y] = board.tales_cpy
+			if board.board[y][x] == " ":
+				board.board[y][x] = board.tales_cpy
 			if (y == 0):
 				y = 8
 			else :
 				y -= 1
 			board.player_pos_y = y
-			board.tales_cpy = board.board[x][y]
+			board.tales_cpy = board.board[y][x]
 		elif string == 's':
-			if board.board[x][y] == " ":
-				board.board[x][y] = board.tales_cpy
+			if board.board[y][x] == " ":
+				board.board[y][x] = board.tales_cpy
 			if (y == 8):
 				y = 0
 			else :
 				y += 1
 			board.player_pos_y = y
-			board.tales_cpy = board.board[x][y]
-		elif string in "0123456789" :
-			board.board[y][x] = string	
+			board.tales_cpy = board.board[y][x]
+		elif (string in "0123456789") and (board.board_init[y][x] == 0):
+			board.board[y][x] = int(string)
 		if string == 'x':
 			break
 	my_process.terminate()
 	os.system("clear")
+	board.is_valid_solution()
 
 def valid_board(board):
 	if (len(board) != 9):
@@ -233,7 +237,9 @@ def menu():
 		if (raw_choice == "1"):
 			board.print_board_str()
 		elif (raw_choice == "2"):
-			play_soduku(board)
+			play_sudoku(board)
+			if board.correct:
+				print ("Well done !\n")
 		elif (raw_choice == "3"):
 			solver(board_cpy)
 			print_boards(board.board, board_cpy)
@@ -244,5 +250,9 @@ def menu():
 			break
 		else :
 			print("Enter a proper value please.\n")
+		time.sleep(0.5)
 
-menu()
+
+if __name__ == "__main__":
+	menu()
+
