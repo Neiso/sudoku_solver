@@ -3,40 +3,38 @@
 import os
 import copy
 from MyClasses import Board
-import threading
 import multiprocessing
 import time
 import getch
 
+"""
+	Print the board and next to it the board solved. Storing everything in a buffer makes it faster.
+"""
 def print_boards(board, board_cpy):
-	index_vert = 0
-	index_hor = 0
-
-	print("")
-	print("-" * 25 + " " * 11 + "-" * 25)
-	while (index_vert < 9):
-		while (index_hor < 9):
-			if index_hor % 3  == 0 :
-				print("| ", end = "")
-			print(str(board[index_vert][index_hor]) + " ", end="")
-			index_hor += 1
-		print("| ", end="")
-		index_hor = 0
-		if index_vert == 4 :
-			print (" " * 3 + "->" + " " * 5, end="")
+	string = "\n"
+	for y in range(0, 9):
+		if y % 3  == 0 :
+			string += "-" * 25 + " " * 11 + "-" * 25 + "\n"
+		for x in range(0, 9):
+			if x % 3  == 0 :
+				string += "| "
+			string += str(board[y][x]) + " "
+		string += "| "
+		if y == 4 :
+			string += (" " * 3 + "->" + " " * 5)
 		else:
-		 print(" " * 10, end="")
-		while (index_hor < 9):
-			if index_hor % 3  == 0 :
-				print("| ", end = "")
-			print(str(board_cpy[index_vert][index_hor]) + " ", end="")
-			index_hor += 1
-		index_hor = 0
-		print("| ")
-		index_vert += 1
-		if index_vert % 3  == 0 :
-			print("-" * 25 + " " * 10, "-" * 25)
-	print("")
+			string += (" " * 10)
+		for x in range(0, 9):
+			if x % 3  == 0 :
+				string += ("| ")
+			string += str(board_cpy[y][x]) + " "
+		string += "| " + "\n"
+	string += "-" * 25 + " " * 11 + "-" * 25 + "\n"
+	print(string)
+"""
+	Verify axes and board both verify if a value could fit in the board. If it can't, they return False and the solver
+	Try to fit in an other value
+"""
 
 def verify_axes(board, x, y, value):
 	for i in board[y]:
@@ -62,6 +60,11 @@ def verify_square(board, x, y, value):
 				return 0
 	return 1
 
+"""	
+	The solver find zero, if it finds one, it inserts a value starting from 1 through 9. After putting a value in, it launches the solver with the new board.
+	It finds a zero again and try to fit a value. If in the new board, none of the 9 values could fit, in returns 0. It means that the initial value wasn't good so it tries
+	with the upper value and restart again.
+"""
 def solver(board):
 	x = 0
 	y = 0
@@ -82,6 +85,13 @@ def solver(board):
 		y += 1
 	return 1
 
+"""
+	To play the sudoku, I had to make 2 processes. One for getting the input from the user and the other one to tell the player on which tale he is. I tried to use threading to share
+	the same data so the thread could run in the back and when i would set the board object to be done, the thread would stop. But in order to get the input from the user without him pressing
+	enter, i had to use a very high level sys call. This high level call would pause the process, so all the thread within got froze. So i used processing which is very slower and
+	unhandy. Since it can't share data, the object don't get update in the second process so i have to kill it and relaunch it with the new user's input data. Which makes it very slow.
+	I think there is a way to communicate between processes but that will be for an optimized version (v0.4). 
+"""
 def display_sudoku_highligth(board):
 	os.system("clear")
 	board.print_board_str(playing = True)
@@ -114,8 +124,6 @@ def play_sudoku(board):
 		my_process.start()
 		string = getch.getch()
 		my_process.terminate()
-		while (my_process.is_alive()):
-			time.sleep(0.1)
 		time.sleep(0.033)
 		if string == 'q':
 			if board.board[y][x] == " ":
@@ -252,7 +260,5 @@ def menu():
 			print("Enter a proper value please.\n")
 		time.sleep(0.5)
 
-
 if __name__ == "__main__":
 	menu()
-
