@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 
-import os
-import copy
+from os import system
+from copy import deepcopy
 from MyClasses import Board
-import multiprocessing
-import time
-import getch
+from multiprocessing import Process
+from time import sleep
+from getch import getch
+
+clear = system("clear")
 
 """
 	Print the board and next to it the board solved. Storing everything in a buffer makes it faster.
@@ -93,38 +95,38 @@ def solver(board):
 	I think there is a way to communicate between processes but that will be for an optimized version (v0.4). 
 """
 def display_sudoku_highligth(board):
-	os.system("clear")
+	clear
 	board.print_board_str(playing = True)
 	print("Move around with QZSD and exit with X.", flush=True)
-	time.sleep(0.05)
+	sleep(0.05)
 	x = board.player_pos_x
 	y = board.player_pos_y
 	board.tale_cpy = board.board[y][x]
 	board.board[y][x] = " "
 	swap = True
-	os.system("clear")
+	clear
 	while (not board.solved):
 		board.print_board_str(playing = True)
 		print("Move around with QZSD and exit with X.", flush=True)
-		time.sleep(0.35)
+		sleep(0.35)
 		if (swap):
 			swap = False
 			board.board[y][x] = board.tale_cpy
 		else :
 			swap = True
 			board.board[y][x] = " "
-		os.system("clear")
+		clear
 
 def play_sudoku(board):
 	x = 0
 	y = 0
 	while (not board.solved):
 		board.tales_cpy = board.board[x][y]
-		my_process = multiprocessing.Process(target=display_sudoku_highligth, args=[board])
+		my_process = Process(target=display_sudoku_highligth, args=[board])
 		my_process.start()
-		string = getch.getch()
+		string = getch()
 		my_process.terminate()
-		time.sleep(0.033)
+		sleep(0.033)
 		if string == 'q':
 			if board.board[y][x] == " ":
 				board.board[y][x] = board.tales_cpy
@@ -166,7 +168,7 @@ def play_sudoku(board):
 		if string == 'x':
 			break
 	my_process.terminate()
-	os.system("clear")
+	clear
 	board.is_valid_solution()
 
 def valid_board(board):
@@ -209,11 +211,11 @@ def import_board(init_board):
 		else :
 			raise ValueError("Not a proper Board")
 	except TypeError as err:
-		os.system("clear")
+		clear
 		print(err, "\n")
 		return init_board
 	except ValueError as err:
-		os.system("clear")
+		clear
 		print(err, "\n")
 		return init_board
 
@@ -230,8 +232,8 @@ def menu():
 		[0, 5, 4, 0, 6, 7, 0, 9, 3]
 	]
 	board = Board(board)
-	board_cpy = copy.deepcopy(board.board)
-	os.system("clear")
+	board_cpy = deepcopy(board.board)
+	clear
 	while (True):
 		print("\t\tWelcome to the Sudoku Solver v0.2\n")
 		print("Choose an option :\n")
@@ -241,7 +243,7 @@ def menu():
 		print("4]\tImport a board")
 		print("5]\tQuit")
 		raw_choice = input("\nYour choice : ")
-		os.system("clear")
+		clear
 		if (raw_choice == "1"):
 			board.print_board_str()
 		elif (raw_choice == "2"):
@@ -252,13 +254,14 @@ def menu():
 			solver(board_cpy)
 			print_boards(board.board, board_cpy)
 		elif (raw_choice == "4"):
+			clear
 			board = import_board(board)
-			board_cpy = copy.deepcopy(board.board)
+			board_cpy = deepcopy(board.board)
 		elif (raw_choice == "5" or raw_choice == "exit"):
 			break
 		else :
 			print("Enter a proper value please.\n")
-		time.sleep(0.5)
+		sleep(0.5)
 
 if __name__ == "__main__":
 	menu()

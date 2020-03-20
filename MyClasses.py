@@ -62,7 +62,6 @@ class Board():
 				string += ("-" * 25) + "\n"
 		print(string, flush=True) #For the input while playing to work properly, i need to flush the stdout so it prints out instantly instrad of buffering the output
 
-
 	def is_valid_solution(self):
 		from sudoku_solver import verify_axes, verify_square
 		mistakes = []
