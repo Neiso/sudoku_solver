@@ -263,5 +263,6 @@ def menu():
 			print("Enter a proper value please.\n")
 		sleep(0.5)
 
+#avoid running code in import
 if __name__ == "__main__":
 	menu()

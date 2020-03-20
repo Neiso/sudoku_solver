@@ -1,4 +1,3 @@
-import threading
 import copy
 
 class Board():
