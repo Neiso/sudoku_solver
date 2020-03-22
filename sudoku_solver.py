@@ -7,8 +7,6 @@ from multiprocessing import Process
 from time import sleep
 from getch import getch
 
-clear = system("clear")
-
 """
 	Print the board and next to it the board solved. Storing everything in a buffer makes it faster.
 """
@@ -95,7 +93,7 @@ def solver(board):
 	I think there is a way to communicate between processes but that will be for an optimized version (v0.4). 
 """
 def display_sudoku_highligth(board):
-	clear
+	system("clear")
 	board.print_board_str(playing = True)
 	print("Move around with QZSD and exit with X.", flush=True)
 	sleep(0.05)
@@ -104,7 +102,7 @@ def display_sudoku_highligth(board):
 	board.tale_cpy = board.board[y][x]
 	board.board[y][x] = " "
 	swap = True
-	clear
+	system("clear")
 	while (not board.solved):
 		board.print_board_str(playing = True)
 		print("Move around with QZSD and exit with X.", flush=True)
@@ -115,7 +113,7 @@ def display_sudoku_highligth(board):
 		else :
 			swap = True
 			board.board[y][x] = " "
-		clear
+		system("clear")
 
 def play_sudoku(board):
 	x = 0
@@ -165,10 +163,10 @@ def play_sudoku(board):
 			board.tales_cpy = board.board[y][x]
 		elif (string in "0123456789") and (board.board_init[y][x] == 0):
 			board.board[y][x] = int(string)
-		if string == 'x':
+		elif string == 'x':
 			break
 	my_process.terminate()
-	clear
+	system("clear")
 	board.is_valid_solution()
 
 def valid_board(board):
@@ -211,11 +209,11 @@ def import_board(init_board):
 		else :
 			raise ValueError("Not a proper Board")
 	except TypeError as err:
-		clear
+		system("clear")
 		print(err, "\n")
 		return init_board
 	except ValueError as err:
-		clear
+		system("clear")
 		print(err, "\n")
 		return init_board
 
@@ -233,7 +231,7 @@ def menu():
 	]
 	board = Board(board)
 	board_cpy = deepcopy(board.board)
-	clear
+	system("clear")
 	while (True):
 		print("\t\tWelcome to the Sudoku Solver v0.2\n")
 		print("Choose an option :\n")
@@ -243,7 +241,7 @@ def menu():
 		print("4]\tImport a board")
 		print("5]\tQuit")
 		raw_choice = input("\nYour choice : ")
-		clear
+		system("clear")
 		if (raw_choice == "1"):
 			board.print_board_str()
 		elif (raw_choice == "2"):
@@ -254,7 +252,7 @@ def menu():
 			solver(board_cpy)
 			print_boards(board.board, board_cpy)
 		elif (raw_choice == "4"):
-			clear
+			system("clear")
 			board = import_board(board)
 			board_cpy = deepcopy(board.board)
 		elif (raw_choice == "5" or raw_choice == "exit"):
@@ -262,6 +260,7 @@ def menu():
 		else :
 			print("Enter a proper value please.\n")
 		sleep(0.5)
+                
 
 #avoid running code in import
 if __name__ == "__main__":
