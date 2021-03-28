@@ -31,59 +31,6 @@ def print_boards(board, board_cpy):
 		string += "| " + "\n"
 	string += "-" * 25 + " " * 11 + "-" * 25 + "\n"
 	print(string)
-"""
-	Verify axes and board both verify if a value could fit in the board. If it can't, they return False and the solver
-	Try to fit in an other value
-"""
-
-def verify_axes(board, x, y, value):
-	for i in board[y]:
-		if i == value:
-			return 0
-	for i in board:
-		if i[x] == value:
-			return 0
-	return 1
-
-def verify_square(board, x, y, value):
-	if (x % 3 == 1):
-		x -= 1
-	elif (x % 3 == 2):
-		x -= 2
-	if (y % 3 == 1):
-		y -= 1
-	elif (y % 3 == 2):
-		y-= 2
-	for i in board[y:y+3]:
-		for j in i[x:x+3]:
-			if j == value :
-				return 0
-	return 1
-
-"""	
-	The solver find zero, if it finds one, it inserts a value starting from 1 through 9. After putting a value in, it launches the solver with the new board.
-	It finds a zero again and try to fit a value. If in the new board, none of the 9 values could fit, in returns 0. It means that the initial value wasn't good so it tries
-	with the upper value and restart again.
-"""
-def solver(board):
-	x = 0
-	y = 0
-	for row in board:
-		for i in row:
-			if i == 0:
-				for value in range(1,10):
-					if (verify_square(board, x, y, value) and verify_axes(board, x, y, value)):
-						row[x] = value
-						if (solver(board)):
-							return 1
-						else:
-							row[x] = 0
-				if row[x] == 0:
-					return 0
-			x += 1
-		x = 0
-		y += 1
-	return 1
 
 """
 	To play the sudoku, I had to make 2 processes. One for getting the input from the user and the other one to tell the player on which tale he is. I tried to use threading to share
@@ -218,7 +165,7 @@ def import_board(init_board):
 		return init_board
 
 def menu():
-	board = [
+	board_demo = [
 		[3, 7, 0, 9, 2, 0, 8, 4, 0],
 		[0, 1, 0, 0, 7, 0, 9, 0, 2],
 		[2, 0, 0, 0, 0, 4, 0, 7, 0],
@@ -229,8 +176,8 @@ def menu():
 		[8, 0, 3, 0, 9, 0, 0, 5, 0],
 		[0, 5, 4, 0, 6, 7, 0, 9, 3]
 	]
-	board = Board(board)
-	board_cpy = deepcopy(board.board)
+	board = Board(board_demo)
+	board_cpy = deepcopy(board)
 	system("clear")
 	while (True):
 		print("\t\tWelcome to the Sudoku Solver v0.2\n")
@@ -249,12 +196,12 @@ def menu():
 			if board.correct:
 				print ("Well done !\n")
 		elif (raw_choice == "3"):
-			solver(board_cpy)
-			print_boards(board.board, board_cpy)
+			board_cpy.solver()
+			print_boards(board.board, board_cpy.board)
 		elif (raw_choice == "4"):
 			system("clear")
 			board = import_board(board)
-			board_cpy = deepcopy(board.board)
+			board_cpy = deepcopy(board)
 		elif (raw_choice == "5" or raw_choice == "exit"):
 			break
 		else :

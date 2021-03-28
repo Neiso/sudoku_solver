@@ -4,13 +4,11 @@ class Board():
 	def __init__(self, board):
 		self.board = board
 		self.board_init = copy.deepcopy(board)
-
-	player_pos_x = 0
-	player_pos_y = 0
-	solved = False
-	tales_cpy = 0
-	correct = True
-
+		self.player_pos_x = 0
+		self.player_pos_y = 0
+		self.solved = False
+		self.tales_cpy = 0
+		self.correct = True
 
 	def print_board_str(self, playing=False):
 		index_vert = 0
@@ -62,7 +60,6 @@ class Board():
 		print(string, flush=True) #For the input while playing to work properly, i need to flush the stdout so it prints out instantly instrad of buffering the output
 
 	def is_valid_solution(self):
-		from sudoku_solver import verify_axes, verify_square
 		mistakes = []
 		player_board = self.board
 		count = 0
@@ -93,5 +90,52 @@ class Board():
 				mistakes.pop(index)
 		self.print_board_finished(mistakes)
 		
+	"""
+		Verify axes and board both verify if a value could fit in the board. If it can't, they return False and the solver
+		Try to fit in an other value
+	"""
 
+	def verify_axes(self, x, y, value):
+		for i in self.board[y]:
+			if i == value:
+				return 0
+		for i in self.board:
+			if i[x] == value:
+				return 0
+		return 1
+
+	def verify_square(self, x, y, value):
+		# 	y-= 2
+		x -= x % 3
+		y -= y % 3
+		for i in self.board[y:y+3]:
+			for j in i[x:x+3]:
+				if j == value :
+					return 0
+		return 1
+
+	"""	
+		The solver find zero, if it finds one, it inserts a value starting from 1 through 9. After putting a value in, it launches the solver with the new board.
+		It finds a zero again and try to fit a value. If in the new board, none of the 9 values could fit, in returns 0. It means that the initial value wasn't good so it tries
+		with the upper value and restart again.
+	"""
+	def solver(self):
+		x = 0
+		y = 0
+		for row in self.board:
+			for i in row:
+				if i == 0:
+					for value in range(1,10):
+						if (self.verify_square(x, y, value) and self.verify_axes(x, y, value)):
+							row[x] = value
+							if (self.solver()):
+								return 1
+							else:
+								row[x] = 0
+					if row[x] == 0:
+						return 0
+				x += 1
+			x = 0
+			y += 1
+		return 1
 				 
